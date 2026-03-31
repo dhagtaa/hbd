@@ -26,7 +26,7 @@ overflow-x:hidden;
 position:fixed;
 width:100%;
 height:100%;
-background:#0d0500;
+background:transparent;
 display:flex;
 justify-content:center;
 align-items:center;
@@ -42,7 +42,7 @@ transition:.3s;
 }
 .envelope:hover{transform:scale(1.1)}
 
-/* BACKGROUND */
+/* GALAXY */
 .galaxy{
 position:fixed;
 width:150%;
@@ -63,6 +63,7 @@ z-index:-3;
 100%{transform:translate(-60px,-40px) scale(1.15)}
 }
 
+/* GLOW */
 .glow-bg{
 position:fixed;
 width:100%;
@@ -74,32 +75,45 @@ z-index:-2;
 filter:blur(80px);
 }
 
+/* ⭐ FULL STARS */
 .stars{
 position:fixed;
+top:0;
+left:0;
 width:100%;
 height:100%;
 z-index:-1;
+background:
+radial-gradient(2px 2px at 20% 30%, white, transparent),
+radial-gradient(1px 1px at 50% 70%, white, transparent),
+radial-gradient(2px 2px at 80% 90%, white, transparent),
+radial-gradient(1px 1px at 10% 80%, white, transparent),
+radial-gradient(2px 2px at 70% 40%, white, transparent),
+radial-gradient(1px 1px at 30% 60%, white, transparent),
+radial-gradient(2px 2px at 90% 20%, white, transparent),
+radial-gradient(1px 1px at 40% 90%, white, transparent);
+background-repeat:repeat;
+background-size:400px 400px;
+animation:twinkleMove 20s linear infinite;
 }
+
+/* layer tambahan */
 .stars::after{
 content:"";
 position:absolute;
-width:2px;
-height:2px;
-background:white;
-box-shadow:
-100px 200px white,
-300px 150px white,
-500px 250px white,
-700px 300px white,
-900px 400px white,
-1100px 200px white,
-1300px 350px white;
-animation:twinkle 2s infinite alternate;
+width:100%;
+height:100%;
+background:
+radial-gradient(1px 1px at 25% 20%, white, transparent),
+radial-gradient(1px 1px at 60% 80%, white, transparent),
+radial-gradient(2px 2px at 80% 50%, white, transparent);
+background-size:300px 300px;
+animation:twinkleMove 30s linear infinite;
 }
 
-@keyframes twinkle{
-from{opacity:.3}
-to{opacity:1}
+@keyframes twinkleMove{
+0%{background-position:0 0}
+100%{background-position:400px 400px}
 }
 
 /* CARD */
@@ -188,19 +202,21 @@ color:#FFA500;
 
 <body>
 
+<!-- BACKGROUND -->
+<div class="galaxy"></div>
+<div class="glow-bg"></div>
+<div class="stars"></div>
+
+<!-- INTRO -->
 <div id="intro" class="intro">
 <div class="envelope" onclick="openLetter()">💌</div>
 <p>Klik untuk buka surat</p>
 </div>
 
-<div class="galaxy"></div>
-<div class="glow-bg"></div>
-<div class="stars"></div>
-
+<!-- CARD -->
 <div class="card" id="card">
 
 <div class="photo-slider" id="slider">
-<!-- ⚠️ PASTIKAN LINK INI VALID -->
 <img src="https://res.cloudinary.com/dhwtdxvl1/image/upload/v1774967691/foto1.jpg_bbzyyx.jpg" class="active">
 <img src="https://res.cloudinary.com/dhwtdxvl1/image/upload/v1774967690/foto2.jpg_rasw6z.jpg">
 <img src="https://res.cloudinary.com/dhwtdxvl1/image/upload/v1774967690/foto3.jpg_jjidvk.jpg">
@@ -218,17 +234,34 @@ Sebenernya ada banyak hal yang pengen aku bilang, tapi ya… mungkin belum waktu
 
 </div>
 
+<!-- AUDIO -->
+<audio id="bgm" loop>
+<source src="sound.mp3  " type="audio/mpeg">
+</audio>
+
 <script>
 
 /* OPEN */
 function openLetter(){
 document.getElementById("intro").style.display="none"
 document.getElementById("card").classList.add("show")
+
+let music = document.getElementById("bgm")
+music.volume = 0
+music.play()
+
+let fade = setInterval(()=>{
+if(music.volume < 1){
+music.volume += 0.05
+}else{
+clearInterval(fade)
+}
+},200)
 }
 
-/* SLIDER FIX (LEBIH AMAN) */
-let slides=document.querySelectorAll("#slider img")
-let index=0
+/* SLIDER */
+let slides = document.querySelectorAll("#slider img")
+let index = 0
 
 function slidePhotos(){
 slides[index].classList.remove("active")
@@ -253,7 +286,8 @@ Makasih ya… udah jadi bagian dari banyak hal,
 yang mungkin ga selalu keliatan,
 tapi kerasa.
 
-Aku cuma pengen kamu bahagia.
+Terima kasih juga udah bikin hidup aku lebih berwarna,
+dan udah banyak nemenin aku sejauh ini.
 
 Dan entah kenapa,
 dari sekian banyak hal…
