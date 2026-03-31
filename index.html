@@ -8,7 +8,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
 <style>
-
 *{margin:0;padding:0;box-sizing:border-box}
 
 body{
@@ -17,13 +16,12 @@ min-height:100vh;
 display:flex;
 justify-content:center;
 align-items:flex-start;
-overflow-y:auto;
 background:#0d0500;
 padding:30px 0;
+overflow-x:hidden;
 }
 
 /* INTRO */
-
 .intro{
 position:fixed;
 width:100%;
@@ -32,9 +30,9 @@ background:#0d0500;
 display:flex;
 justify-content:center;
 align-items:center;
-z-index:10;
 flex-direction:column;
 color:white;
+z-index:10;
 }
 
 .envelope{
@@ -42,11 +40,9 @@ font-size:60px;
 cursor:pointer;
 transition:.3s;
 }
-
 .envelope:hover{transform:scale(1.1)}
 
-/* GALAXY */
-
+/* BACKGROUND */
 .galaxy{
 position:fixed;
 width:150%;
@@ -67,8 +63,6 @@ z-index:-3;
 100%{transform:translate(-60px,-40px) scale(1.15)}
 }
 
-/* EXTRA GLOW BACKGROUND */
-
 .glow-bg{
 position:fixed;
 width:100%;
@@ -80,15 +74,12 @@ z-index:-2;
 filter:blur(80px);
 }
 
-/* STARS */
-
 .stars{
 position:fixed;
 width:100%;
 height:100%;
 z-index:-1;
 }
-
 .stars::after{
 content:"";
 position:absolute;
@@ -97,17 +88,12 @@ height:2px;
 background:white;
 box-shadow:
 100px 200px white,
-200px 300px white,
 300px 150px white,
-400px 350px white,
 500px 250px white,
-600px 100px white,
 700px 300px white,
-800px 200px white,
 900px 400px white,
-1000px 150px white,
-1200px 250px white,
-1400px 100px white;
+1100px 200px white,
+1300px 350px white;
 animation:twinkle 2s infinite alternate;
 }
 
@@ -117,7 +103,6 @@ to{opacity:1}
 }
 
 /* CARD */
-
 .card{
 width:90%;
 max-width:460px;
@@ -126,20 +111,16 @@ padding:30px;
 border-radius:25px;
 text-align:center;
 box-shadow:0 40px 80px rgba(0,0,0,.4);
-position:relative;
-z-index:2;
 opacity:0;
 transform:translateY(30px);
 transition:1s;
 }
-
 .card.show{
 opacity:1;
 transform:translateY(0);
 }
 
-/* PHOTO FIX */
-
+/* SLIDER */
 .photo-slider{
 width:100%;
 height:220px;
@@ -149,14 +130,14 @@ margin-bottom:15px;
 position:relative;
 background:#000;
 display:flex;
-align-items:center;
 justify-content:center;
+align-items:center;
 }
 
 .photo-slider img{
+position:absolute;
 max-width:100%;
 max-height:100%;
-position:absolute;
 opacity:0;
 transition:opacity 1s;
 }
@@ -166,7 +147,6 @@ opacity:1;
 }
 
 /* TEXT */
-
 .message{
 margin-top:10px;
 color:#555;
@@ -177,7 +157,6 @@ white-space:pre-line;
 }
 
 /* BUTTON */
-
 button{
 margin-top:15px;
 padding:10px 22px;
@@ -189,14 +168,12 @@ cursor:pointer;
 font-weight:600;
 transition:.3s;
 }
-
 button:hover{
 transform:scale(1.05);
 background:#ff8c00;
 }
 
 /* SECRET */
-
 .secret{
 display:none;
 margin-top:20px;
@@ -206,22 +183,6 @@ border-radius:10px;
 font-weight:600;
 color:#FFA500;
 }
-
-/* CONFETTI */
-
-.confetti{
-position:absolute;
-width:8px;
-height:8px;
-border-radius:50%;
-animation:fall linear forwards;
-}
-
-@keyframes fall{
-0%{transform:translateY(-10vh)}
-100%{transform:translateY(110vh)}
-}
-
 </style>
 </head>
 
@@ -236,19 +197,20 @@ animation:fall linear forwards;
 <div class="glow-bg"></div>
 <div class="stars"></div>
 
-<div class="card">
+<div class="card" id="card">
 
-<div class="photo-slider">
-<img src="foto1.jpg.jpeg" class="active">
-<img src="foto2.jpg.jpeg">
-<img src="foto3.jpg.jpeg">
+<div class="photo-slider" id="slider">
+<!-- ⚠️ PASTIKAN LINK INI VALID -->
+<img src="https://res.cloudinary.com/dhwtdxvl1/image/upload/v1774967691/foto1.jpg_bbzyyx.jpg" class="active">
+<img src="https://res.cloudinary.com/dhwtdxvl1/image/upload/v1774967690/foto2.jpg_rasw6z.jpg">
+<img src="https://res.cloudinary.com/dhwtdxvl1/image/upload/v1774967690/foto3.jpg_jjidvk.jpg">
 </div>
 
 <h1 style="color:#e67e22">Happy Birthday Munya!</h1>
 
 <p class="message" id="letter"></p>
 
-<button onclick="showSecret()">Pesan Rahasia</button>
+<button onclick="toggleSecret()">Pesan Rahasia</button>
 
 <div class="secret" id="secret">
 Sebenernya ada banyak hal yang pengen aku bilang, tapi ya… mungkin belum waktunya.
@@ -258,41 +220,30 @@ Sebenernya ada banyak hal yang pengen aku bilang, tapi ya… mungkin belum waktu
 
 <script>
 
+/* OPEN */
 function openLetter(){
 document.getElementById("intro").style.display="none"
-document.querySelector(".card").classList.add("show")
+document.getElementById("card").classList.add("show")
 }
 
-/* CONFETTI */
+/* SLIDER FIX (LEBIH AMAN) */
+let slides=document.querySelectorAll("#slider img")
+let index=0
 
-function confetti(){
-let c=document.createElement("div")
-c.className="confetti"
-
-let colors=["#ffd700","#ff9a6a","#ffffff","#e67e22"]
-
-c.style.background=colors[Math.floor(Math.random()*colors.length)]
-c.style.left=Math.random()*100+"vw"
-
-let dur=Math.random()*3+3
-c.style.animationDuration=dur+"s"
-
-document.body.appendChild(c)
-
-setTimeout(()=>c.remove(),dur*1000)
+function slidePhotos(){
+slides[index].classList.remove("active")
+index = (index + 1) % slides.length
+slides[index].classList.add("active")
 }
-
-for(let i=0;i<80;i++)confetti()
+setInterval(slidePhotos,3000)
 
 /* SECRET */
-
-function showSecret(){
+function toggleSecret(){
 let s=document.getElementById("secret")
-s.style.display=s.style.display==="block"?"none":"block"
+s.style.display = s.style.display === "block" ? "none" : "block"
 }
 
 /* TYPE */
-
 const text=`Selamat ulang tahun ya, Munyaa 🎂🤍
 
 Semoga ke depan hidup kamu lebih ringan,
@@ -306,10 +257,9 @@ Aku cuma pengen kamu bahagia.
 
 Dan entah kenapa,
 dari sekian banyak hal…
-kamu tetap jadi salah satu yang sulit diganti 😄s`
+kamu tetap jadi salah satu yang sulit diganti 😄`
 
 let i=0
-
 function typeLetter(){
 let el=document.getElementById("letter")
 if(i<text.length){
@@ -318,26 +268,7 @@ i++
 setTimeout(typeLetter,35)
 }
 }
-
 typeLetter()
-
-/* SLIDER */
-
-let slideIndex=0
-
-function slidePhotos(){
-let slides=document.querySelectorAll(".photo-slider img")
-slides.forEach(img=>img.classList.remove("active"))
-
-slideIndex++
-if(slideIndex >= slides.length){
-slideIndex = 0
-}
-
-slides[slideIndex].classList.add("active")
-}
-
-setInterval(slidePhotos,3000)
 
 </script>
 
